@@ -1,4 +1,4 @@
-name: (pstar) (LineageOS 21) (kernelsu nethunter) Build Kernel
+name: (pstar) (LineageOS) (docker lxc nethunter) Build Kernel
 on:
   watch:
     types: [started]
@@ -18,7 +18,7 @@ jobs:
     - uses: actions/checkout@v4
     - name: Prepare Configuration
       run: |
-        CONFIG_ENV=$(grep -w "CONFIG_ENV" Lineage21_pstar_kernelsu_nethunter.env | head -n 1 | cut -d "=" -f 2)
+        CONFIG_ENV=$(grep -w "CONFIG_ENV" Lineage_pstar_docker_lxc_nethunter.env | head -n 1 | cut -d "=" -f 2)
         CONFIG_LIST=(
             KERNEL_SOURCE
             KERNEL_SOURCE_BRANCH
@@ -215,7 +215,7 @@ jobs:
       run: |
         echo "kernel_source_dir=$GITHUB_WORKSPACE/kernel_workspace/android-kernel" >> $GITHUB_ENV
         echo "target_config=$GITHUB_WORKSPACE/kernel_workspace/android-kernel/arch/${{ env.ARCH }}/configs/${{ env.KERNEL_CONFIG }}" >> $GITHUB_ENV
-        echo "support_config_file=$GITHUB_WORKSPACE/SupportedConfig_Lineage21_pstar" >> $GITHUB_ENV
+        echo "support_config_file=$GITHUB_WORKSPACE/SupportedConfig_Lineage_pstar" >> $GITHUB_ENV
         echo "IGNORE_ERRORS=true" >> $GITHUB_ENV
 
     - name: Generate Kernel Build Config
@@ -537,7 +537,7 @@ jobs:
       if: env.ENABLE_susfs4ksu == 'true' && env.IF_KernelSU_CONTAIN_SUSFS == 'false' && env.KERNELSU_LKM != 'true'
       run: |
         cd $GITHUB_WORKSPACE/kernel_workspace/android-kernel/KernelSU
-        patch -p1 < $GITHUB_WORKSPACE/kernel_workspace/android-kernel/kernel_patches/patches/${{ env.Kernel_Extra_Version }}/10_enable_susfs_for_backslashxx_ksu.patch
+        patch -p1 < $GITHUB_WORKSPACE/kernel_workspace/android-kernel/kernel_patches/patches/${{ env.Kernel_Extra_Version }}/10_enable_susfs_for_ksu.patch
 
     - name: Setup susfs4ksu workaround
       if: env.ENABLE_susfs4ksu == 'true' && env.APPLY_KSU_PATCH == 'true' && env.KERNELSU_LKM != 'true'
