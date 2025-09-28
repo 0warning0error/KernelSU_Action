@@ -1,0 +1,43 @@
+#!/bin/bash
+
+if [ -z "$kernel_source_dir" ] || [ -z "$target_config" ] || [ -z "$support_config_file" ]; then
+    echo "Error: Environment variables kernel_source_dir, target_config or support_config_file are not set."
+    exit 1
+fi
+
+if [ "$#" -ne 2 ]; then
+    echo "Usage: $0 [-e|-d] CONFIG_OPTION"
+    exit 1
+fi
+
+action=$1
+config_option=$2
+
+if [[ ! $config_option == CONFIG_* ]]; then
+    config_option_with_prefix="CONFIG_$config_option"
+else
+    config_option_with_prefix=$config_option
+    config_option=${config_option#CONFIG_}
+fi
+
+case $action in
+    -e)
+        if grep -qE "^(CONFIG_)?$config_option=" "$support_config_file"; then
+            "$kernel_source_dir/scripts/config" --file "$target_config" -e "$config_option_with_prefix"
+        else
+            echo "Error: $config_option or $config_option_with_prefix is not supported."
+            if [ -z "$IGNORE_ERRORS" ]; then
+                exit 1
+            fi
+        fi
+        ;;
+    -d)
+        "$kernel_source_dir/scripts/config" --file "$target_config" -d "$config_option_with_prefix"
+        ;;
+    *)
+        echo "Error: Invalid action. Use -e to enable or -d to disable a config option."
+        exit 1
+        ;;
+esac
+
+exit 0
